@@ -1,66 +1,33 @@
-import React, { useState, useEffect } from 'react'
-import { supabase } from './supabase'
-import Auth from './components/Auth'
-import FileConverter from './components/FileConverter'
-import './App.css'
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    // Verificar si hay una sesión activa
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
-    }
-
-    getSession()
-
-    // Escuchar cambios en la autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-  }
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner">🔄</div>
-        <p>Cargando...</p>
-      </div>
-    )
-  }
-
   return (
     <div className="App">
-      {!user ? (
-        <Auth onAuthSuccess={setUser} />
-      ) : (
-        <div>
-          <header className="app-header">
-            <h1>🔄 FileConverter Pro</h1>
-            <div className="user-info">
-              <span>Bienvenido, {user.email}</span>
-              <button onClick={handleLogout} className="logout-btn">
-                Cerrar Sesión
-              </button>
-            </div>
-          </header>
-          <FileConverter user={user} />
+      <header className="App-header">
+        <h1>🔄 FileConverter Pro</h1>
+        <p>Conversor Universal de Archivos</p>
+        <p>
+          Sistema que permite convertir entre múltiples formatos de archivos
+          y visualizar archivos con extensiones difíciles de abrir.
+        </p>
+        <div className="features">
+          <h3>Características:</h3>
+          <ul style={{textAlign: 'left', maxWidth: '400px'}}>
+            <li>📁 Conversión ZIP ↔ RAR ↔ 7Z</li>
+            <li>📄 Documentos PDF ↔ DOCX ↔ TXT</li>
+            <li>🖼️ Imágenes PNG ↔ JPG ↔ WEBP</li>
+            <li>👁️ Visualización de archivos .arc, .lzh</li>
+            <li>🔐 Sistema de usuarios seguro</li>
+            <li>🌍 Multilenguaje (ES/EN)</li>
+          </ul>
         </div>
-      )}
+        <p style={{fontSize: '14px', marginTop: '20px'}}>
+          Proyecto para el ramo Diseño de Software - TICS316
+        </p>
+      </header>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
