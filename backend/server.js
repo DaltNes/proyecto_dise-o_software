@@ -1,8 +1,6 @@
-import express from "express";
-import cors from "cors";
-import multer from "multer";
-import fs from "fs";
-import path from "path";
+const express = require("express");
+const cors = require("cors");
+const multer = require("multer");
 
 const app = express();
 app.use(cors());

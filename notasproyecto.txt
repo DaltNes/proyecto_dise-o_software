@@ -1,3 +1,35 @@
 Ver PPTs
 
 Supabase
+-------------------------------------------------------------------------
+Cosas que me faltan:
+Funcionalidades esenciales:
+
+❌ Sistema de autenticación (requerido)
+❌ Base de datos y CRUD (requerido)
+❌ API externa (requerido)
+❌ Multilenguaje implementado (solo tienes las librerías)
+❌ Responsive design (solo tienes el template básico de React)
+Git y desarrollo:
+
+❌ Commits de desarrollo (no veo historial)
+❌ README documentado
+-------------------------------------------------------------------------
+
+Prioridad ALTA (próximos 3-4 días):
+
+1. README detallado con tu temática
+2. Autenticación básica con Supabase
+3. API externa para conversiones (CloudConvert, etc.)
+4. Interfaz básica funcional
+
+Prioridad MEDIA (días 5-8):
+
+5. CRUD para historial de conversiones
+6. Multilenguaje ES/EN
+7. Responsive design
+
+Finalización (días 9-11):
+8. Testing y pulimiento
+9. Commits organizados
+10. Preparar demo
