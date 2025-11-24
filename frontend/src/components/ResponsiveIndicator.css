@@ -1,0 +1,41 @@
+/* Indicador de estado responsive - útil para desarrollo */
+.responsive-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(102, 126, 234, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.responsive-indicator small {
+  font-size: 10px;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* Ocultar en producción */
+@media (max-width: 480px) {
+  .responsive-indicator {
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .responsive-indicator small {
+    font-size: 9px;
+  }
+}

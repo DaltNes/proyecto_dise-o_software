@@ -12,10 +12,16 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@supabase/supabase-js": "^2.81.1",
+    "@supabase/supabase-js": "^2.84.0",
+    "adm-zip": "^0.5.16",
+    "archiver": "^7.0.1",
     "bcryptjs": "^3.0.3",
+    "cloudconvert": "^3.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "node-7z": "^3.0.0",
+    "path": "^0.12.7"
   }
 }
