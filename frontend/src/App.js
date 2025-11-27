@@ -4,9 +4,9 @@ import { AuthProvider, useAuth } from './AuthContext';
 import Login from './Login';
 import Register from './Register';
 import ConversionHistory from './components/ConversionHistory';
-import ApiStatus from './components/ApiStatus';
 import ResponsiveIndicator from './components/ResponsiveIndicator';
 import { conversionHistory } from './lib/database';
+import { useLanguage } from './useLanguage';
 
 // Configuración
 const FORMATS = {
@@ -16,12 +16,7 @@ const FORMATS = {
   '7z': { name: '7Z', icon: '', img: 'https://cdn-icons-png.freepik.com/512/29/29142.png' }
 };
 
-const DESCRIPTIONS = {
-  zip: 'El formato ZIP es uno de los más populares para compresión de archivos.',
-  rar: 'Los archivos RAR ofrecen una excelente compresión y características avanzadas.',
-  arc: 'El formato ARC es un método de compresión más antiguo pero aún útil.',
-  '7z': 'El formato 7Z ofrece una de las mejores tasas de compresión disponibles.'
-}// Componentes compactos
+// Componentes compactos
 const Alert = ({ message, type, onClose }) => (
   <div className={`custom-alert alert-${type}`}>
     <div className="alert-content">
@@ -31,17 +26,17 @@ const Alert = ({ message, type, onClose }) => (
   </div>
 );
 
-const FileSelector = ({ format, selectedFile, onFileSelect, isDragging, onDragOver, onDragLeave, onDrop }) => (
+const FileSelector = ({ format, selectedFile, onFileSelect, isDragging, onDragOver, onDragLeave, onDrop, t }) => (
   <div className={`file-selector ${isDragging ? 'dragging' : ''}`} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
     <label htmlFor={`file-input-${format}`} className="file-selector-label">
       <span className="file-icon">{FORMATS[format].icon}</span>
-      {selectedFile?.name || (isDragging ? 'Suelta el archivo aquí' : `Seleccionar archivo ${FORMATS[format].name} o arrástralo aquí`)}
-      <span className="format-indicator">Solo archivos .{format}</span>
+      {selectedFile?.name || (isDragging ? t('dropFileHere') : `${t('selectOrDrag')} ${FORMATS[format].name} ${t('orDragHere')}`)}
+      <span className="format-indicator">{t('onlyFiles')} .{format}</span>
     </label>
     <input id={`file-input-${format}`} type="file" accept={`.${format}`} onChange={onFileSelect} style={{ display: 'none' }} />
     {selectedFile && (
       <div className="file-info">
-        <small>Archivo: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)</small>
+        <small>{t('fileInfo')}: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)</small>
       </div>
     )}
   </div>
@@ -57,69 +52,69 @@ const Accordion = ({ title, isExpanded, onToggle, children }) => (
   </div>
 );
 
-const FormatCard = ({ format, isVisible, onNavigate }) => {
+const FormatCard = ({ format, isVisible, onNavigate, t }) => {
   if (!isVisible) return null;
   return (
     <article className="article">
       <div className="article-content">
         <div className="article-left">
-          <img src={FORMATS[format].img} width="80" height="80" alt={`Archivo ${FORMATS[format].name}`} />
+          <img src={FORMATS[format].img} width="80" height="80" alt={`${t('fileAlt')} ${FORMATS[format].name}`} />
           <h2>
             <button onClick={() => onNavigate(format)} className="format-link" 
               style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', color: 'inherit', textDecoration: 'underline'}}>
               FORMATO {FORMATS[format].name}
             </button>
           </h2>
-          <p>Opciones de los archivos {FORMATS[format].name}</p>
+          <p>{t('fileOptions')} {FORMATS[format].name}</p>
         </div>
         <div className="article-center">
-          <p>{DESCRIPTIONS[format]}</p>
+          <p>{t(format === '7z' ? 'sevenZDesc' : format + 'Desc')}</p>
         </div>
       </div>
     </article>
   );
 };
 
-const ConversionOptions = ({ fromFormat, selectedFile, isConverting, onConvert }) => (
+const ConversionOptions = ({ fromFormat, selectedFile, isConverting, onConvert, t }) => (
   <div className="conversion-options">
     {Object.keys(FORMATS).filter(f => f !== fromFormat).map(target => (
       <div key={target} className="conversion-option" onClick={() => onConvert(`${fromFormat}-to-${target}`)}>
         <div className="option-info">
-          <h4>A formato {FORMATS[target].name}</h4>
-          <p>{DESCRIPTIONS[target].split('.')[0]}</p>
+          <h4>{t('toFormat')} {FORMATS[target].name}</h4>
+          <p>{t(target === '7z' ? 'sevenZDesc' : target + 'Desc')}</p>
         </div>
         <button className={`option-btn ${!selectedFile ? 'disabled' : ''}`} disabled={!selectedFile || isConverting}>
-          {isConverting ? 'Convirtiendo...' : 'Convertir'}
+          {isConverting ? t('converting') : t('convert')}
         </button>
       </div>
     ))}
   </div>
 );
 
-const ExtractionResult = ({ result }) => (
+const ExtractionResult = ({ result, t }) => (
   <div className="operation-result">
-    <div className="result-header"><h3>Extracción Completada</h3></div>
+    <div className="result-header"><h3>{t('extractionCompleted')}</h3></div>
     <div className="result-content">
       <p>{result.message}</p>
-      <p>Archivos extraídos: {result.extractedFiles?.length || 0}</p>
+      <p>{t('filesExtracted')}: {result.extractedFiles?.length || 0}</p>
       {result.extractedFiles && (
         <div className="extracted-files">
-          <h4>Archivos encontrados:</h4>
+          <h4>{t('filesFound')}:</h4>
           <ul>
             {result.extractedFiles.slice(0, 10).map((file, i) => (
               <li key={i}>
                 {typeof file === 'object' ? 
-                  `${file.type === 'directory' ? '[DIR]' : '[FILE]'} ${file.name}${file.size ? ` (${(file.size / 1024).toFixed(1)} KB)` : ''}` 
+                  `${file.type === 'directory' ? t('dirLabel') : t('fileLabel')} ${file.name}${file.size ? ` (${(file.size / 1024).toFixed(1)} KB)` : ''}` 
                   : file}
               </li>
             ))}
-            {result.extractedFiles.length > 10 && <li>... y {result.extractedFiles.length - 10} elementos más</li>}
+            {result.extractedFiles.length > 10 && <li>... y {result.extractedFiles.length - 10} {t('moreElements')}</li>}
           </ul>
         </div>
       )}
       {result.downloadUrl && (
         <a href={`http://localhost:3001${result.downloadUrl}`} download className="download-btn">
-          Descargar archivos extraídos (ZIP)
+          {t('downloadZip')}
         </a>
       )}
     </div>
@@ -127,63 +122,63 @@ const ExtractionResult = ({ result }) => (
 );
 
 const FormatTools = ({ format, selectedFile, isConverting, onFileSelect, onConvert, onExtract, onBack, 
-  expandedSections, onToggleAccordion, conversionResult, isDragging, onDragOver, onDragLeave, onDrop }) => (
+  expandedSections, onToggleAccordion, conversionResult, isDragging, onDragOver, onDragLeave, onDrop, t }) => (
   <div className="tools-section">
     <div className="section-header">
-      <button onClick={onBack} className="back-btn">Volver al inicio</button>
-      <h1>Herramientas para archivos {FORMATS[format].name}</h1>
+      <button onClick={onBack} className="back-btn">{t('backToHome')}</button>
+      <h1>{t('toolsFor')} {FORMATS[format].name}</h1>
     </div>
     
-    <FileSelector {...{ format, selectedFile, onFileSelect, isDragging, onDragOver, onDragLeave, onDrop }} />
+    <FileSelector {...{ format, selectedFile, onFileSelect, isDragging, onDragOver, onDragLeave, onDrop, t }} />
     
     <div className="accordion-container">
-      <Accordion title={`Convertir ${FORMATS[format].name} a otros formatos`}
+      <Accordion title={`${t('convert')} ${FORMATS[format].name} ${t('toOtherFormats')}`}
         isExpanded={expandedSections[`${format}-conversion`]}
         onToggle={() => onToggleAccordion(`${format}-conversion`)}>
-        <ConversionOptions {...{ fromFormat: format, selectedFile, isConverting, onConvert }} />
+        <ConversionOptions {...{ fromFormat: format, selectedFile, isConverting, onConvert, t }} />
         {conversionResult && !conversionResult.type && (
           <div className="conversion-result">
-            <p>Conversión exitosa</p>
+            <p>{t('conversionSuccess')}</p>
             <a href={`http://localhost:3001/download/${conversionResult.filename}`} download className="download-btn">
-              Descargar archivo convertido
+              {t('downloadConverted')}
             </a>
           </div>
         )}
       </Accordion>
 
-      <Accordion title={`Extraer contenido ${FORMATS[format].name}`}
+      <Accordion title={`${t('extractContent')} ${FORMATS[format].name}`}
         isExpanded={expandedSections[`${format}-extract`]}
         onToggle={() => onToggleAccordion(`${format}-extract`)}>
         <div className="extraction-tools">
           <div className="tool-description">
-            <p>Extrae todos los archivos de tu {FORMATS[format].name} de forma segura</p>
+            <p>{t('extractSafely')} {FORMATS[format].name} {t('safelyEnd')}</p>
           </div>
           <button className={`extract-btn ${!selectedFile ? 'disabled' : ''}`}
             disabled={!selectedFile || isConverting} onClick={onExtract}>
-            {isConverting ? 'Extrayendo...' : 'Extraer archivos'}
+            {isConverting ? t('extracting') : t('extractFiles')}
           </button>
         </div>
       </Accordion>
 
       {format === 'zip' && (
-        <Accordion title="Crear archivo ZIP" isExpanded={expandedSections['zip-create']}
+        <Accordion title={t('createZip')} isExpanded={expandedSections['zip-create']}
           onToggle={() => onToggleAccordion('zip-create')}>
           <div className="creation-tools">
-            <div className="tool-description"><p>Selecciona múltiples archivos para crear un nuevo ZIP</p></div>
+            <div className="tool-description"><p>{t('selectMultiple')}</p></div>
             <input id="create-zip-input" type="file" multiple
               style={{ marginBottom: '15px', padding: '10px', border: '1px solid #333', borderRadius: '5px', background: '#1a1a1a', color: 'white' }} />
-            <button id="create-zip-btn" className="create-btn">Crear ZIP</button>
+            <button id="create-zip-btn" className="create-btn">{t('createBtn')}</button>
           </div>
         </Accordion>
       )}
 
-      {conversionResult?.type === 'extraction' && <ExtractionResult result={conversionResult} />}
+      {conversionResult?.type === 'extraction' && <ExtractionResult result={conversionResult} t={t} />}
     </div>
   </div>
 );
 
 // Hook personalizado para lógica de archivo
-const useFileOperations = (user, showAlert) => {
+const useFileOperations = (user, showAlert, t) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionResult, setConversionResult] = useState(null);
@@ -197,7 +192,7 @@ const useFileOperations = (user, showAlert) => {
         isValid: false,
         message: section === 'home' 
           ? `Formato no soportado: .${ext.toUpperCase()}\nFormatos válidos: ${Object.values(FORMATS).map(f => f.name).join(', ')}`
-          : `Error: Estás en ${FORMATS[section].name}, archivo es .${ext.toUpperCase()}`
+          : `${t('errorInSection')} ${FORMATS[section].name}, ${t('fileIs')} .${ext.toUpperCase()}`
       };
     }
     return { isValid: true };
@@ -219,7 +214,7 @@ const useFileOperations = (user, showAlert) => {
   };
 
   const convertFile = async (conversionType) => {
-    if (!selectedFile) return showAlert('Selecciona un archivo primero', 'warning');
+    if (!selectedFile) return showAlert(t('selectFileFirst'), 'warning');
 
     const [from, to] = conversionType.split('-to-');
     setIsConverting(true);
@@ -275,16 +270,16 @@ const useFileOperations = (user, showAlert) => {
       console.error('🔍 Tipo de error:', error.name);
       console.error('💬 Mensaje:', error.message);
       
-      let errorMessage = 'Error desconocido';
+      let errorMessage = t('unknownError');
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté corriendo en puerto 3001';
+        errorMessage = t('serverConnection');
       } else if (error.name === 'NetworkError' || error.message.includes('NetworkError')) {
-        errorMessage = 'Error de red. Verifica tu conexión y que el servidor esté activo';
+        errorMessage = t('networkError');
       } else {
         errorMessage = error.message;
       }
       
-      showAlert(`Error al convertir: ${errorMessage}`, 'error');
+      showAlert(`${t('errorConverting')}: ${errorMessage}`, 'error');
 
       if (conversionRecord) await conversionHistory.updateStatus(conversionRecord.id, 'failed');
     } finally {
@@ -293,7 +288,7 @@ const useFileOperations = (user, showAlert) => {
   };
 
   const extractFile = async () => {
-    if (!selectedFile) return showAlert('Selecciona un archivo primero', 'warning');
+    if (!selectedFile) return showAlert(t('selectFileFirst'), 'warning');
 
     setIsConverting(true);
     try {
@@ -322,22 +317,22 @@ const useFileOperations = (user, showAlert) => {
       const result = await response.json();
       console.log('✅ Extracción exitosa:', result);
       setConversionResult({ ...result, type: 'extraction' });
-      showAlert('Extracción completada', 'success');
+      showAlert(t('extractionCompleted'), 'success');
     } catch (error) {
       console.error('❌ Error extracción:', error);
       console.error('🔍 Tipo de error:', error.name);
       console.error('💬 Mensaje:', error.message);
       
-      let errorMessage = 'Error desconocido';
+      let errorMessage = t('unknownError');
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté corriendo en puerto 3001';
+        errorMessage = t('serverConnection');
       } else if (error.name === 'NetworkError' || error.message.includes('NetworkError')) {
-        errorMessage = 'Error de red. Verifica tu conexión y que el servidor esté activo';
+        errorMessage = t('networkError');
       } else {
         errorMessage = error.message;
       }
       
-      showAlert(`Error al extraer: ${errorMessage}`, 'error');
+      showAlert(`${t('errorExtract')}: ${errorMessage}`, 'error');
     } finally {
       setIsConverting(false);
     }
@@ -350,10 +345,10 @@ const useFileOperations = (user, showAlert) => {
 // Componente principal
 const MainApp = () => {
   const { user, signOut } = useAuth();
+  const { t, language, changeLanguage } = useLanguage();
   const [activeLink, setActiveLink] = useState(null);
   const [currentSection, setCurrentSection] = useState('home');
   const [showHistory, setShowHistory] = useState(false);
-  const [showApiStatus, setShowApiStatus] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
   const [alertMessage, setAlertMessage] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -365,7 +360,7 @@ const MainApp = () => {
   };
 
   const { selectedFile, setSelectedFile, isConverting, conversionResult, 
-    handleFileSelect, convertFile, extractFile, validateFileFormat } = useFileOperations(user, showAlert);
+    handleFileSelect, convertFile, extractFile, validateFileFormat } = useFileOperations(user, showAlert, t);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -388,12 +383,14 @@ const MainApp = () => {
 
       <header>
         <div className="user-info">
+          <button onClick={() => changeLanguage(language === 'es' ? 'en' : 'es')} className="lang-btn">
+            {language === 'es' ? 'EN' : 'ES'}
+          </button>
           <span>{user?.email}</span>
-          <button onClick={() => setShowApiStatus(true)} className="api-btn">API</button>
-          <button onClick={() => setShowHistory(true)} className="history-btn">Historial</button>
-          <button onClick={signOut} className="logout-btn">Logout</button>
+          <button onClick={() => setShowHistory(true)} className="history-btn">{t('history')}</button>
+          <button onClick={signOut} className="logout-btn">{t('logout')}</button>
         </div>
-        <h1>FileConverter Pro</h1>
+        <h1>{t('appTitle')}</h1>
         <button 
           className="mobile-menu-toggle" 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -405,7 +402,7 @@ const MainApp = () => {
       </header>
 
       <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
-        <h3>Herramientas online para convertir archivos ZIP, RAR, ARC, 7Z</h3>
+        <h3>{t('subtitle')}</h3>
         <ul>
           {Object.keys(FORMATS).map(format => (
             <li key={format}>
@@ -435,7 +432,7 @@ const MainApp = () => {
           Object.keys(FORMATS).map(format => (
             <FormatCard key={format} format={format}
               isVisible={!activeLink || activeLink === format}
-              onNavigate={setCurrentSection} />
+              onNavigate={setCurrentSection} t={t} />
           ))
         ) : (
           <FormatTools format={currentSection} selectedFile={selectedFile} isConverting={isConverting}
@@ -445,16 +442,15 @@ const MainApp = () => {
             conversionResult={conversionResult} isDragging={isDragging}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={(e) => { e.preventDefault(); if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false); }}
-            onDrop={handleDrop}
+            onDrop={handleDrop} t={t}
           />
         )}
       </section>
 
       <div className='clearfix'></div>
-      <footer>Pedro xd</footer>
+      <footer>{t('footer')}</footer>
 
       {showHistory && <ConversionHistory onClose={() => setShowHistory(false)} />}
-      {showApiStatus && <ApiStatus onClose={() => setShowApiStatus(false)} />}
       
       {/* Indicador responsive para desarrollo */}
       {process.env.NODE_ENV === 'development' && <ResponsiveIndicator />}

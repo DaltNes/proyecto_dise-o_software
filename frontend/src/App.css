@@ -34,7 +34,8 @@
 header {
   background: var(--bg-primary);
   height: 100px;
-  text-align: center;
+  text-align: left;
+  padding-left: 50px;
   line-height: 100px;
   color: var(--text-primary);
   border-bottom: 3px solid #8f8a8a;
@@ -90,7 +91,7 @@ header {
   transform: translateY(-1px);
 }
 
-.api-btn { background: #10b981; }
+.api-btn { background: #26b082; }
 .api-btn:hover { background: #059669; }
 .history-btn { background: var(--accent-purple); }
 .history-btn:hover { background: #5a67d8; }
@@ -139,14 +140,14 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-  background: #f0f0f0;
+  background: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 nav ul li a.active {
   color: white;
-  border-color: white;
+  border-color: rgb(255, 255, 255);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
@@ -207,7 +208,7 @@ nav ul li a.active:hover {
 /* === FOOTER === */
 footer {
   background: black;
-  color: white;
+  color: rgb(0, 0, 0);
   text-align: center;
   height: 50px;
   line-height: 50px;

@@ -51,7 +51,7 @@ const ApiStatus = ({ onClose }) => {
     <div className="api-status-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="api-status-modal">
         <div className="api-status-header">
-          <h2>🌐 Estado de APIs Externas</h2>
+          <h2> Estado de APIs Externas</h2>
           <button onClick={onClose} className="close-btn">&times;</button>
         </div>
 
@@ -71,7 +71,7 @@ const ApiStatus = ({ onClose }) => {
 
           {/* Estado de CloudConvert */}
           <div className="status-section">
-            <h3>☁️ CloudConvert API</h3>
+            <h3> CloudConvert API</h3>
             <div className="status-item">
               <span className="status-indicator">
                 {getStatusIcon(status?.cloudconvert?.configured)}
@@ -112,12 +112,12 @@ const ApiStatus = ({ onClose }) => {
                   </ol>
 
                   <div className="benefits">
-                    <h5>✨ Beneficios con CloudConvert:</h5>
+                    <h5> Beneficios con CloudConvert:</h5>
                     <ul>
-                      <li>🔄 Conversiones REALES entre formatos</li>
-                      <li>📁 Soporte para ZIP, RAR, 7Z, ARC y más</li>
-                      <li>🆓 25 conversiones gratis por día</li>
-                      <li>⚡ Procesamiento rápido y confiable</li>
+                      <li> Conversiones REALES entre formatos</li>
+                      <li> Soporte para ZIP, RAR, 7Z, ARC y más</li>
+                      <li> 25 conversiones gratis por día</li>
+                      <li> Procesamiento rápido y confiable</li>
                     </ul>
                   </div>
 
@@ -131,11 +131,11 @@ const ApiStatus = ({ onClose }) => {
           </div>
 
           <div className="current-mode">
-            <h3>⚙️ Modo de Funcionamiento</h3>
+            <h3> Modo de Funcionamiento</h3>
             <div className={`mode-badge ${status?.cloudconvert?.configured ? 'real' : 'simulated'}`}>
               {status?.cloudconvert?.configured ? (
                 <>
-                  <span className="mode-icon">🌐</span>
+                  <span className="mode-icon"></span>
                   <span>Conversiones Reales con CloudConvert</span>
                 </>
               ) : (

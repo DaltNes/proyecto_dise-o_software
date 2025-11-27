@@ -13,7 +13,7 @@ const cloudConvert = new CloudConvert(process.env.CLOUDCONVERT_API_KEY || 'your-
  */
 async function convertFile(inputPath, outputFormat, inputFormat) {
   try {
-    console.log(`🔄 Iniciando conversión: ${inputFormat} → ${outputFormat}`);
+    console.log(` Iniciando conversión: ${inputFormat} → ${outputFormat}`);
 
     // Crear un job de conversión
     const job = await cloudConvert.jobs.create({
@@ -43,11 +43,11 @@ async function convertFile(inputPath, outputFormat, inputFormat) {
     const inputFile = fs.createReadStream(inputPath);
     
     await cloudConvert.tasks.upload(uploadTask, inputFile);
-    console.log('⬆️ Archivo subido exitosamente');
+    console.log('⬆ Archivo subido exitosamente');
 
     // Esperar a que la conversión termine
     const jobCompleted = await cloudConvert.jobs.wait(job.id);
-    console.log(`✅ Job completado: ${jobCompleted.status}`);
+    console.log(` Job completado: ${jobCompleted.status}`);
 
     // Obtener la URL del archivo convertido
     const exportTask = jobCompleted.tasks.filter(task => task.name === 'export-file')[0];
@@ -68,7 +68,7 @@ async function convertFile(inputPath, outputFormat, inputFormat) {
     }
 
   } catch (error) {
-    console.error('❌ Error en CloudConvert:', error);
+    console.error(' Error en CloudConvert:', error);
     
     return {
       success: false,
